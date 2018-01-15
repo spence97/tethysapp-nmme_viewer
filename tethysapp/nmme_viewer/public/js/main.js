@@ -32,12 +32,9 @@ var LIBRARY_OBJECT = (function() {
         $vicplotModal,
         wms_workspace,
         wms_url,
-        wms_forecast_layer,
-        wms_33_layer,
-        wms_66_layer,
-        wms_source_forecast,
-        wms_source_33,
-        wms_source_66;
+        wms_layer,
+        wms_source;
+
 
 
 
@@ -118,13 +115,13 @@ var LIBRARY_OBJECT = (function() {
             projection: projection,
             zoom: 2.4
         });
-        wms_source_forecast = new ol.source.ImageWMS();
+        wms_source = new ol.source.ImageWMS();
 
-        wms_forecast_layer = new ol.layer.Image({
-            source: wms_source_forecast
+        wms_layer = new ol.layer.Image({
+            source: wms_source
         });
 
-        layers = [baseLayer,wms_forecast_layer];
+        layers = [baseLayer,wms_layer];
 
         map = new ol.Map({
             target: document.getElementById("map"),
@@ -250,7 +247,7 @@ var LIBRARY_OBJECT = (function() {
 
     add_wms = function(){
         // gs_layer_list.forEach(function(item){
-        map.removeLayer(wms_forecast_layer);
+        map.removeLayer(wms_layer);
         var year = $("#select_year").find('option:selected').val();
         var month = $("#select_layer").find('option:selected').val();
         var var_name = $("#var_select").find('option:selected').val();
@@ -281,40 +278,20 @@ var LIBRARY_OBJECT = (function() {
             </NamedLayer>\
             </StyledLayerDescriptor>';
 
-        wms_source_forecast = new ol.source.ImageWMS({
-            url: 'http://localhost:8080/geoserver/wms',
+        wms_source = new ol.source.ImageWMS({
+            url: 'http://tethys.byu.edu:8181/geoserver/wms',
             params: {'LAYERS':layer_name,'SLD_BODY':sld_string},
             serverType: 'geoserver',
             crossOrigin: 'Anonymous'
         });
 
-        wms_source_33 = new ol.source.ImageWMS({
-            url: 'http://localhost:8080/geoserver/wms',
-            params: {'LAYERS':var_name + '_33:'+ month,'SLD_BODY':sld_string},
-            serverType: 'geoserver',
-            crossOrigin: 'Anonymous'
+
+        wms_layer = new ol.layer.Image({
+            source: wms_source
         });
 
-        wms_source_66 = new ol.source.ImageWMS({
-            url: 'http://localhost:8080/geoserver/wms',
-            params: {'LAYERS':var_name + '_66:'+ month,'SLD_BODY':sld_string},
-            serverType: 'geoserver',
-            crossOrigin: 'Anonymous'
-        });
 
-        wms_forecast_layer = new ol.layer.Image({
-            source: wms_source_forecast
-        });
-
-        wms_33_layer = new ol.layer.Image({
-            source: wms_source_33
-        });
-
-        wms_66_layer = new ol.layer.Image({
-            source: wms_source_66
-        });
-
-        map.addLayer(wms_forecast_layer);
+        map.addLayer(wms_layer);
 
 
 
@@ -353,7 +330,7 @@ var LIBRARY_OBJECT = (function() {
             </NamedLayer>\
             </StyledLayerDescriptor>';
 
-        wms_source_forecast.updateParams({'LAYERS':layer_name,'SLD_BODY':sld_string});
+        wms_source.updateParams({'LAYERS':layer_name,'SLD_BODY':sld_string});
 
     };
 
